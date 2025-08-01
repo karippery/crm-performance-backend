@@ -1,0 +1,56 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Virtual environment
+.env/
+venv/
+.venv/
+env/
+ENV/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+.env.local
+.env.dev
+.env.prod
+
+# Node.js (if using frontend)
+node_modules/
+npm-debug.log*
+
+# Coverage
+.coverage
+htmlcov/
+.coverage.*
+*.cover
+
+# Database migrations (optional - some teams track these)
+# !/your_app/migrations/
+# /your_app/migrations/*
+# !/your_app/migrations/__init__.py
+
+# Poetry/Pip
+poetry.lock
+Pipfile.lock
+*.egg-info/
+dist/
+build/
+
+# Testing
+.pytest_cache/
