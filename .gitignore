@@ -54,3 +54,4 @@ build/
 
 # Testing
 .pytest_cache/
+.env
