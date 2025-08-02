@@ -29,7 +29,7 @@ class AppUser(models.Model):
 
     first_name = models.CharField(max_length=100, db_index=True, validators=[MinLengthValidator(2)])
     last_name = models.CharField(max_length=100, db_index=True, validators=[MinLengthValidator(2)])
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=25, choices=GENDER_CHOICES)
     customer_id = models.CharField(max_length=50, unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)

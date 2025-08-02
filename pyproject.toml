@@ -28,4 +28,7 @@ sentry-sdk = "^2.34.1"
 django-debug-toolbar = "^6.0.0"
 drf-yasg = "^1.21.10"
 pytest = "^8.4.1"
+pytest-django = "^4.11.1"
+factory-boy = "^3.3.3"
+pytest-cov = "^6.2.1"
 
