@@ -1,4 +1,3 @@
-# management/commands/populate_data.py
 import random
 import string
 from datetime import date, datetime, timedelta
@@ -6,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from faker import Faker
 from core.models import Address, AppUser, CustomerRelationship
+from django.utils import timezone
 
 class Command(BaseCommand):
     help = 'Populate database with sample data'
@@ -23,6 +23,11 @@ class Command(BaseCommand):
             default=10000,
             help='Batch size for bulk operations (default: 10,000)'
         )
+        parser.add_argument(
+            '--skip-addresses',
+            action='store_true',
+            help='Skip address creation (use existing addresses)'
+        )
 
     def handle(self, *args, **options):
         fake = Faker(['en_US', 'de_DE', 'fr_FR'])
@@ -32,8 +37,13 @@ class Command(BaseCommand):
         self.stdout.write(f"Creating {num_users:,} users in batches of {batch_size:,}")
         
         # First, create addresses in bulk
-        self.stdout.write("Creating addresses...")
-        addresses = self.create_addresses(fake, num_users, batch_size)
+        # self.stdout.write("Creating addresses...")
+        # addresses = self.create_addresses(fake, num_users, batch_size)
+
+        if options['skip_addresses']:  # Add this flag to arguments
+            addresses = Address.objects.order_by('id')[:num_users]
+        else:
+            addresses = self.create_addresses(fake, num_users, batch_size)
         
         # Then create users and relationships
         self.stdout.write("Creating users and relationships...")
@@ -90,7 +100,7 @@ class Command(BaseCommand):
                     last_name=fake.last_name(),
                     gender=random.choice(['Male', 'Female', 'Other', 'Prefer not to say']),
                     customer_id=self.generate_customer_id(),
-                    phone_number=fake.phone_number() if random.random() > 0.2 else None,
+                    phone_number=fake.phone_number()[:20] if random.random() > 0.2 else None,
                     address=address,
                     birthday=fake.date_of_birth(minimum_age=18, maximum_age=80) if random.random() > 0.1 else None,
                     created=fake.date_time_between(start_date='-2y', end_date='now'),
@@ -105,12 +115,10 @@ class Command(BaseCommand):
                 for user in created_users:
                     relationship = CustomerRelationship(
                         appuser=user,
-                        relationship_type=random.choice(['BASIC', 'PREMIUM', 'VIP']),
                         points=random.randint(0, 10000),
-                        created=user.created + timedelta(days=random.randint(0, 30)),
-                        last_activity=fake.date_time_between(
-                            start_date=user.created, 
-                            end_date='now'
+                        created=timezone.make_aware(fake.date_time_between(start_date='-2y', end_date='now')),
+                        last_activity=timezone.make_aware(
+                            fake.date_time_between(start_date=user.created, end_date='now')
                         ) if random.random() > 0.3 else None
                     )
                     batch_relationships.append(relationship)
