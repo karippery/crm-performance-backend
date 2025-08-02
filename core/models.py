@@ -1,7 +1,7 @@
 from datetime import date
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
-
+from django.utils import timezone
 class Address(models.Model):
     street = models.CharField(max_length=255, validators=[MinLengthValidator(2)])
     street_number = models.CharField(max_length=20)
@@ -32,7 +32,7 @@ class AppUser(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
     customer_id = models.CharField(max_length=50, unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="users")
     birthday = models.DateField(
         blank=True,
@@ -69,7 +69,7 @@ class AppUser(models.Model):
 class CustomerRelationship(models.Model):
     appuser = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="relationships")
     points = models.IntegerField()
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
     last_activity = models.DateTimeField(blank=True, null=True)
 
     class Meta:

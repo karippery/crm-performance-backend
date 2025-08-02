@@ -47,16 +47,25 @@ class AppUserListView(ListAPIView):
             raise ValidationError({'error': 'Invalid filter parameters', 'details': str(e)})
     
     def list(self, request, *args, **kwargs):
-        start_time = time.time()
+        total_start = time.time()
         cache_key = f"appusers::{request.get_full_path()}"
         cached_response = cache.get(cache_key)
         if cached_response is not None:
-            return Response(cached_response)
+            response = Response(cached_response)
+            response.data['meta'] = {
+                'query_time': 0,  # No DB query
+                'response_time': time.time() - total_start,
+                'cache_hit': True
+            }
+            return response
         
+        start_time = time.time()
         response = super().list(request, *args, **kwargs)
+        query_time = time.time() - start_time
 
         response.data['meta'] = {
-            'query_time': time.time() - start_time,
+            'query_time': query_time,
+            'response_time': time.time() - total_start,
             'cache_hit': False
         }
 
